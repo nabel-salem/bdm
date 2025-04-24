@@ -143,7 +143,7 @@
   <input type="text" id="donorCity" placeholder="المحافظة">
   <input type="text" id="donorArea" placeholder="المديرية">
   <input type="text" id="donorLocation" placeholder="مكان السكن">
-  <label class="field-label">هنا تحديد تاريخ آخر تبرع لك ( وفي حال لم تتبرع بعد اتركه فارغاً ) وتستطيع تعديله من جدول البيانات في حال تبرعت</label>
+  <label class="field-label">تحديد تاريخ آخر تبرع لك (وإذا لم تتبرع بعد فاتركه فارغاً) ويمكنك تعديله من جدول البيانات في حال قمت بالتبرع.</label>
   <input type="date" id="donorLastDate">
   <select id="donorBlood">
     <option disabled selected value="">اختر فصيلة الدم</option>
@@ -268,7 +268,7 @@
       document.querySelectorAll("#register input").forEach(i => i.value = "");
       donorBlood.selectedIndex = 0;
     } else {
-      showMessage("يرجى تعبئة جميع الحقول (في حال لم تتبرع بعد لاتقم بتعبئته وعند التبرع تستطيع تعديل تاريخ التبرع من جدول البيانات)");
+      showMessage("يرجى تعبئة جميع الحقول ( ليتم تسجيلك بنجاح)");
     }
   }
 
