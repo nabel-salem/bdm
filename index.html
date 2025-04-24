@@ -1,8 +1,9 @@
+<!-- كود HTML كامل محفوظ في هذا الملف -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>تطبيق التبرع بالدم</title>
   <style>
     * { box-sizing: border-box; }
@@ -105,11 +106,10 @@
         border-bottom: none;
       }
     }
-    .popup-message {
+    .popup-message, .update-date-popup {
       display: none;
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       background: white;
       padding: 20px;
@@ -118,7 +118,7 @@
       z-index: 1000;
       text-align: center;
     }
-    .popup-message.active {
+    .popup-message.active, .update-date-popup.active {
       display: block;
     }
   </style>
@@ -126,6 +126,7 @@
 <body>
 
 <header>متبرعون بالدم - قطرة أمل تنقذ حياة</header>
+<header>تم تصميم هذا الموقع لتسهيل عملية البحث عن المتبرعين بالدم، وتوفير فصائل الدم المختلفة بسرعة وسهولة لكل من يحتاج إليها</header>
 <header>الرجاء من المتبرعين تعبئة بياناتهم الصحيحة وكاملة حتى يتسهل على الباحثين عن الدم ايجاده</header>
 
 <nav>
@@ -134,7 +135,7 @@
   <button onclick="showSection('search')">بحث عن متبرع</button>
 </nav>
 
-<!-- تسجيل -->
+<!-- تسجيل متبرع -->
 <div id="register" class="section active">
   <h3>تسجيل متبرع جديد</h3>
   <input type="text" id="donorName" placeholder="الاسم الكامل">
@@ -142,10 +143,10 @@
   <input type="text" id="donorCity" placeholder="المحافظة">
   <input type="text" id="donorArea" placeholder="المديرية">
   <input type="text" id="donorLocation" placeholder="مكان السكن">
-  <label class="field-label">حدد متى آخر تاريخ تم التبرع فيه</label>
+  <label class="field-label">هنا تحديد تاريخ آخر تبرع لك ( وفي حال لم تتبرع بعد اتركه فارغاً ) وتستطيع تعديله من جدول البيانات في حال تبرعت</label>
   <input type="date" id="donorLastDate">
   <select id="donorBlood">
-    <option selected>جميع الفصائل</option>
+    <option disabled selected value="">اختر فصيلة الدم</option>
     <option>+A</option><option>-A</option>
     <option>+B</option><option>-B</option>
     <option>+AB</option><option>-AB</option>
@@ -173,6 +174,7 @@
       <option>+O</option><option>-O</option>
     </select>
     <button onclick="saveEdit()">حفظ التعديل</button>
+    <button onclick="deleteDonor()">حذف المتبرع</button>
   </div>
 </div>
 
@@ -180,7 +182,7 @@
 <div id="search" class="section">
   <h3>البحث عن متبرعين</h3>
   <select id="searchBlood" onchange="searchDonors()">
-    <option selected>جميع الفصائل</option>
+    <option value="">جميع الفصائل</option>
     <option>+A</option><option>-A</option>
     <option>+B</option><option>-B</option>
     <option>+AB</option><option>-AB</option>
@@ -205,10 +207,16 @@
   <button onclick="checkPassword()">دخول</button>
   <button onclick="closePasswordPopup()">إغلاق</button>
 </div>
+<div id="updateDatePopup" class="update-date-popup">
+  <h3>تحديث تاريخ التبرع</h3>
+  <input type="date" id="newDonationDate">
+  <button onclick="saveDonationDate()">حفظ التحديث</button>
+  <button onclick="closeUpdateDatePopup()">إغلاق</button>
+</div>
 
-<!-- سكريبت -->
 <script>
   const donorsData = JSON.parse(localStorage.getItem('donors')) || [];
+  let currentDonorIndex = null;
 
   function showSection(id) {
     document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
@@ -242,7 +250,17 @@
       lastDate: donorLastDate.value,
       blood: donorBlood.value
     };
-    if (Object.values(d).every(v => v) && d.blood !== "جميع الفصائل") {
+
+    const duplicate = donorsData.find(x =>
+      x.name === d.name && x.phone === d.phone
+    );
+
+    if (duplicate) {
+      showMessage("المتبرع موجود مسبقًا(تأكد من الاسم ورقم الهاتف)");
+      return;
+    }
+
+    if (d.name && d.phone && d.city && d.area && d.location && d.blood) {
       donorsData.push(d);
       localStorage.setItem('donors', JSON.stringify(donorsData));
       renderSearchTable();
@@ -250,7 +268,7 @@
       document.querySelectorAll("#register input").forEach(i => i.value = "");
       donorBlood.selectedIndex = 0;
     } else {
-      showMessage("يرجى تعبئة جميع الحقول");
+      showMessage("يرجى تعبئة جميع الحقول (في حال لم تتبرع بعد لاتقم بتعبئته وعند التبرع تستطيع تعديل تاريخ التبرع من جدول البيانات)");
     }
   }
 
@@ -266,15 +284,15 @@
       editLocation.value = donor.location;
       editLastDate.value = donor.lastDate;
       editBlood.value = donor.blood;
+      currentDonorIndex = donorsData.indexOf(donor);
     } else {
       showMessage("المتبرع غير موجود");
     }
   }
 
   function saveEdit() {
-    const index = donorsData.findIndex(d => d.name.toLowerCase() === editName.value.toLowerCase());
-    if (index > -1) {
-      donorsData[index] = {
+    if (currentDonorIndex !== null) {
+      donorsData[currentDonorIndex] = {
         name: editNewName.value,
         phone: editPhone.value,
         city: editCity.value,
@@ -290,24 +308,20 @@
     }
   }
 
-  function searchDonors() {
-    const blood = searchBlood.value;
-    const query = searchQuery.value.toLowerCase();
-    const results = donorsData.filter(d => 
-      (blood === "جميع الفصائل" || d.blood === blood) &&
-      (d.name.toLowerCase().includes(query) || d.phone.includes(query) || d.city.toLowerCase().includes(query) || d.area.toLowerCase().includes(query) || d.location.toLowerCase().includes(query))
-    );
-    renderTable(results);
+  function deleteDonor() {
+    if (currentDonorIndex !== null) {
+      donorsData.splice(currentDonorIndex, 1);
+      localStorage.setItem('donors', JSON.stringify(donorsData));
+      renderSearchTable();
+      showMessage("تم حذف المتبرع");
+      document.getElementById("editSection").style.display = "none";
+    }
   }
 
   function renderSearchTable() {
-    renderTable(donorsData);
-  }
-
-  function renderTable(data) {
     const tbody = document.getElementById("donorsTable");
     tbody.innerHTML = "";
-    data.forEach((d, index) => {
+    donorsData.forEach((d, index) => {
       tbody.innerHTML += `<tr>
         <td data-label="الاسم">${d.name}</td>
         <td data-label="الهاتف"><a href="tel:${d.phone}">📞 اتصال</a><br>${d.phone}</td>
@@ -315,26 +329,61 @@
         <td data-label="المحافظة">${d.city}</td>
         <td data-label="المديرية">${d.area}</td>
         <td data-label="السكن">${d.location}</td>
-        <td data-label="آخر تبرع">${d.lastDate}</td>
-        <td data-label="تعديل"><button onclick="enableEditDate(${index}, this)">تحديث تاريخ تبرعك</button></td>
+        <td data-label="آخر تبرع">${d.lastDate || "—"}</td>
+        <td data-label="تعديل"><button onclick="enableEditDate(${index})">تحديث تاريخ تبرعك</button></td>
       </tr>`;
     });
   }
 
-  function enableEditDate(index, button) {
-    const cell = button.closest('tr').querySelector('td[data-label="آخر تبرع"]');
-    const input = document.createElement("input");
-    input.type = "date";
-    input.value = donorsData[index].lastDate;
-    input.onblur = () => {
-      donorsData[index].lastDate = input.value;
+  function searchDonors() {
+    const blood = searchBlood.value;
+    const query = searchQuery.value.toLowerCase();
+    const filtered = donorsData.filter(d =>
+      (blood === "" || d.blood === blood) &&
+      (
+        d.name.toLowerCase().includes(query) ||
+        d.phone.includes(query) ||
+        d.city.toLowerCase().includes(query) ||
+        d.area.toLowerCase().includes(query) ||
+        d.location.toLowerCase().includes(query)
+      )
+    );
+    const tbody = document.getElementById("donorsTable");
+    tbody.innerHTML = "";
+    filtered.forEach((d, index) => {
+      tbody.innerHTML += `<tr>
+        <td data-label="الاسم">${d.name}</td>
+        <td data-label="الهاتف"><a href="tel:${d.phone}">📞 اتصال</a><br>${d.phone}</td>
+        <td data-label="الفصيلة">${d.blood}</td>
+        <td data-label="المحافظة">${d.city}</td>
+        <td data-label="المديرية">${d.area}</td>
+        <td data-label="السكن">${d.location}</td>
+        <td data-label="آخر تبرع">${d.lastDate || "—"}</td>
+        <td data-label="تعديل"><button onclick="enableEditDate(${index})">تحديث تاريخ</button></td>
+      </tr>`;
+    });
+  }
+
+  function enableEditDate(index) {
+    currentDonorIndex = index;
+    document.getElementById("updateDatePopup").classList.add("active");
+  }
+
+  function saveDonationDate() {
+    const newDate = document.getElementById("newDonationDate").value;
+    if (newDate.trim() === "") {
+      alert("يرجى إدخال تاريخ التبرع");
+    } else {
+      donorsData[currentDonorIndex].lastDate = newDate;
       localStorage.setItem('donors', JSON.stringify(donorsData));
-      showMessage("تم تحديث تاريخ التبرع");
       renderSearchTable();
-    };
-    cell.innerHTML = "";
-    cell.appendChild(input);
-    input.focus();
+      showMessage("تم تحديث تاريخ تبرعك بنجاح");
+      closeUpdateDatePopup();
+    }
+  }
+
+  function closeUpdateDatePopup() {
+    document.getElementById("updateDatePopup").classList.remove("active");
   }
 
   function showMessage(msg) {
@@ -343,6 +392,8 @@
     popup.classList.add("active");
     setTimeout(() => popup.classList.remove("active"), 3000);
   }
+
+  renderSearchTable(); // عرض البيانات عند التحميل
 </script>
 
 </body>
