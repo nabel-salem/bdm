@@ -61,6 +61,9 @@
       background: white;
     }
     td, th {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
       padding: 10px;
       text-align: center;
     }
@@ -480,7 +483,17 @@
 
       row.innerHTML = `
         <td data-label="الاسم">${d.name || ""}</td>
-        <td data-label="الهاتف"><a href="tel:${d.phone}">${d.phone || ""}</a><br>${d.phone || ""}</td>
+        <td data-label="الهاتف">
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+    <a href="tel:${d.phone}" style="color: white; background-color: #b30000; padding: 5px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: bold; font-size: 12px; white-space: nowrap;">
+      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" fill="white" viewBox="0 0 24 24">
+        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21 11.72 11.72 0 003.69.6 1 1 0 011 1v3.18a1 1 0 01-1 1A17.93 17.93 0 013 5a1 1 0 011-1h3.18a1 1 0 011 1 11.72 11.72 0 00.6 3.69 1 1 0 01-.21 1.11l-2.2 2.2z"/>
+      </svg>
+      اضغط للإتصال
+    </a>
+    <span style="color: #b30000; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.phone || ""}</span>
+  </div>
+</td>
         <td data-label="الفصيلة">${d.blood || ""}</td>
         <td data-label="المحافظة">${d.city || ""}</td>
         <td data-label="المديرية">${d.area || ""}</td>
