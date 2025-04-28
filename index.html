@@ -187,6 +187,9 @@
     <option>+O</option><option>-O</option>
   </select>
   <input type="text" id="searchQuery" placeholder="بحث بالاسم أو الهاتف أو المحافظة أو المديرية أو السكن">
+  <div id="donorCount" style="margin: 15px 0; font-size: 18px; font-weight: bold; color: #333; text-align: center;">
+  <!-- سيتم تعبئته بالعدد تلقائياً -->
+</div>
   <table>
     <thead>
       <tr>
@@ -464,6 +467,9 @@
     currentDisplayedDonors = donorsToRender; // تخزين القائمة المعروضة حالياً
 
     donorsToRender.forEach(d => {
+	// بعد عرض الجدول
+    document.getElementById("donorCount").textContent = `عدد المتبرعين: ${donorsToRender.length}`;
+
       // تأكد من أن كل متبرع لديه 'id'
       if (!d.id) {
          console.warn("Skipping donor with no ID:", d);
