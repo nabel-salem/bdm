@@ -6,124 +6,32 @@
   <title>تطبيق قطرة أمل</title>
   <style>
     * { box-sizing: border-box; }
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f0f0f0;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #b30000;
-      color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 20px;
-    }
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      background-color: #ffcccc;
-      padding: 10px;
-    }
-    nav button {
-      background-color: #b30000;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-    }
-    .section {
-      display: none;
-      padding: 20px;
-    }
-    .active {
-      display: block;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    .field-label {
-      color: #b30000;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-    }
-    td, th {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-      padding: 10px;
-      text-align: center;
-    }
-    thead {
-      background-color: #b30000;
-      color: white;
-    }
-    tbody tr {
-      border: 2px solid #b30000;
-      margin-bottom: 10px;
-    }
+    body { font-family: 'Arial', sans-serif; background: #f0f0f0; margin: 0; padding: 0; }
+    header { background-color: #b30000; color: white; text-align: center; padding: 15px; font-size: 20px; }
+    nav { display: flex; flex-wrap: wrap; justify-content: space-around; background-color: #ffcccc; padding: 10px; }
+    nav button { background-color: #b30000; color: white; border: none; border-radius: 8px; padding: 10px 20px; margin: 5px; cursor: pointer; }
+    .section { display: none; padding: 20px; }
+    .active { display: block; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .field-label { color: #b30000; font-size: 14px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    td, th { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 10px; text-align: center; }
+    thead { background-color: #b30000; color: white; }
+    tbody tr { border: 2px solid #b30000; margin-bottom: 10px; }
     @media (max-width: 600px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      thead {
-        display: none;
-      }
-      tr {
-        margin-bottom: 15px;
-        border: 2px solid #b30000;
-        padding: 10px;
-        border-radius: 10px;
-        background-color: #fff;
-      }
-      td {
-        text-align: right;
-        padding-right: 50%;
-        position: relative;
-        border: none;
-        border-bottom: 1px solid #eee;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        font-weight: bold;
-        color: #b30000;
-      }
-      td:last-child {
-        border-bottom: none;
-      }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr { margin-bottom: 15px; border: 2px solid #b30000; padding: 10px; border-radius: 10px; background-color: #fff; }
+      td { text-align: right; padding-right: 50%; position: relative; border: none; border-bottom: 1px solid #eee; }
+      td::before { content: attr(data-label); position: absolute; right: 10px; top: 10px; font-weight: bold; color: #b30000; }
+      td:last-child { border-bottom: none; }
     }
-    .popup-message, .update-date-popup {
-      display: none;
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      border: 2px solid red;
-      border-radius: 10px;
-      z-index: 1000;
-      text-align: center;
-    }
-    .popup-message.active, .update-date-popup.active {
-      display: block;
-    }
+    .popup-message, .update-date-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid red; border-radius: 10px; z-index: 1000; text-align: center; }
+    .popup-message.active, .update-date-popup.active { display: block; }
   </style>
+  <!-- jsPDF and AutoTable plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -190,9 +98,8 @@
     <option>+O</option><option>-O</option>
   </select>
   <input type="text" id="searchQuery" placeholder="بحث بالاسم أو الهاتف أو المحافظة أو المديرية أو السكن">
-  <div id="donorCount" style="margin: 15px 0; font-size: 18px; font-weight: bold; color: #333; text-align: center;">
-  <!-- سيتم تعبئته بالعدد تلقائياً -->
-</div>
+  <div id="donorCount" style="margin:15px 0;font-size:18px;font-weight:bold;color:#333;text-align:center;"></div>
+  <button id="btn-export-pdf">تحميل PDF</button>
   <table>
     <thead>
       <tr>
@@ -209,7 +116,7 @@
   <input type="password" id="passwordInput" placeholder="كلمة المرور">
   <button id="btn-check-password">دخول</button>
   <button id="btn-close-password-popup">إغلاق</button>
-   <p style="font-size: 12px; color: gray;">للتعديل أو الحذف، تواصل على الواتس: 00966511479262 نبيل اليافعي</p>
+  <p style="font-size:12px;color:gray;">للتعديل أو الحذف، تواصل على الواتس: 00966511479262 نبيل اليافعي</p>
 </div>
 <div id="updateDatePopup" class="update-date-popup">
   <h3>تحديث تاريخ التبرع</h3>
@@ -219,13 +126,9 @@
 </div>
 
 <script type="module">
-  // استيراد الدوال اللازمة من Firebase SDKs
-  // تأكد من استخدام أحدث الإصدارات إذا كان Firebase SDKs في مشروعك أحدث
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
-  // استخدم بيانات التهيئة الخاصة بمشروعك
   const firebaseConfig = {
     apiKey: "AIzaSyDfIBS2gB4lkRZ1_ZerLk451EVfafrfWSM",
     authDomain: "qtratamal.firebaseapp.com",
@@ -234,422 +137,196 @@
     messagingSenderId: "491056452067",
     appId: "1:491056452067:web:0c8ef019a651cd47c290d6"
   };
-
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app); // الحصول على مرجع لقاعدة بيانات Firestore
+  const db = getFirestore(app);
 
-  // متغير لتخزين معرف المستند (ID) للمتبرع الذي يتم تعديله أو تحديث تاريخ تبرعه
   let currentDonorDocId = null;
-  // متغير لتخزين قائمة المتبرعين المعروضة حالياً في جدول البحث (للتصفية المحلية)
-  // هذا المتغير قد لا يكون ضرورياً إذا تم تطبيق الفلترة بالكامل في Firestore لاحقاً
   let currentDisplayedDonors = [];
 
-  // الدوال التي تتحكم في عرض الأقسام والنوافذ المنبثقة
   function showSection(id) {
-    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    // عند عرض قسم البحث، قم بتحديث الجدول
-    if (id === 'search') {
-      searchDonors();
-    }
-    // عند عرض قسم التسجيل، مسح الحقول
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'search') searchDonors();
     if (id === 'register') {
-       document.querySelectorAll("#register input").forEach(i => i.value = "");
-       document.getElementById("donorBlood").selectedIndex = 0;
+      document.querySelectorAll('#register input').forEach(i => i.value = '');
+      document.getElementById('donorBlood').selectedIndex = 0;
     }
-     // عند عرض قسم التعديل، إخفاء نموذج التعديل وتفريغ حقل البحث
     if (id === 'edit') {
-       document.getElementById("editSection").style.display = "none";
-       document.getElementById("editSearchInput").value = "";
-       currentDonorDocId = null; // مسح المعرف المخزن
-       document.getElementById("editingDonorId").textContent = "";
+      document.getElementById('editSection').style.display = 'none';
+      document.getElementById('editSearchInput').value = '';
+      currentDonorDocId = null;
+      document.getElementById('editingDonorId').textContent = '';
     }
   }
+  function showPasswordPopup() { document.getElementById('passwordPopup').classList.add('active'); document.getElementById('passwordInput').value = ''; }
+  function closePasswordPopup() { document.getElementById('passwordPopup').classList.remove('active'); }
+  function checkPassword() { if (document.getElementById('passwordInput').value === "Na@7363Nabel") { closePasswordPopup(); showSection('edit'); } else alert('كلمة المرور غير صحيحة'); }
 
-  function showPasswordPopup() {
-    document.getElementById("passwordPopup").classList.add("active");
-    document.getElementById("passwordInput").value = ""; // مسح حقل كلمة المرور
+  function showMessage(msg) {
+    const popup = document.getElementById('successPopup'); popup.innerHTML = msg; popup.classList.add('active'); setTimeout(() => popup.classList.remove('active'), 3000);
   }
 
-  function closePasswordPopup() {
-    document.getElementById("passwordPopup").classList.remove("active");
-  }
-
-  // تنبيه أمني: هذه الدالة غير آمنة. كلمة المرور مكشوفة في الكود.
-  // يفضل استخدام Firebase Authentication بدلاً منها.
-  function checkPassword() {
-    const password = document.getElementById("passwordInput").value;
-    if (password === "Na@7363Nabel") { // استخدام كلمة المرور الثابتة الموجودة في كودك الأصلي
-      closePasswordPopup();
-      showSection("edit"); // عرض قسم التعديل
-    } else {
-      alert("كلمة المرور غير صحيحة");
-    }
-  }
-
-  // دالة لإضافة متبرع جديد إلى Firestore
   async function addDonor() {
     const d = {
-      name: document.getElementById("donorName").value.trim(),
-      phone: document.getElementById("donorPhone").value.trim(),
-      city: document.getElementById("donorCity").value.trim(),
-      area: document.getElementById("donorArea").value.trim(),
-      location: document.getElementById("donorLocation").value.trim(),
-      lastDate: document.getElementById("donorLastDate").value || null, // استخدم null إذا كان فارغاً
-      blood: document.getElementById("donorBlood").value
+      name: document.getElementById('donorName').value.trim(),
+      phone: document.getElementById('donorPhone').value.trim(),
+      city: document.getElementById('donorCity').value.trim(),
+      area: document.getElementById('donorArea').value.trim(),
+      location: document.getElementById('donorLocation').value.trim(),
+      lastDate: document.getElementById('donorLastDate').value || null,
+      blood: document.getElementById('donorBlood').value
     };
+    if (!d.name || !d.phone || !d.city || !d.area || !d.location || !d.blood) { showMessage('يرجى تعبئة جميع الحقول الأساسية'); return; }
 
-    // التحقق من البيانات الأساسية
-    if (!d.name || !d.phone || !d.city || !d.area || !d.location || !d.blood) {
-      showMessage("يرجى تعبئة جميع الحقول الأساسية (الاسم، الهاتف، المحافظة، المديرية، السكن، فصيلة الدم).");
-      return;
-    }
-
-    // يمكنك إضافة تحقق من التكرار هنا إذا لزم الأمر، لكنه يتطلب استعلاماً إضافياً ل Firestore
-    // For simplicity, skipping duplicate check for now
+    // فحص التكرار في Firestore
+      const phoneSnap = await getDocs(query(collection(db, 'donors'), where('phone', '==', d.phone)));
+    if (!phoneSnap.empty) { showMessage('رقم الهاتف مسجل بالفعل'); return; }
 
     try {
-      // إضافة مستند جديد إلى مجموعة 'donors' في Firestore
-      const docRef = await addDoc(collection(db, "donors"), d);
-      console.log("Document written with ID: ", docRef.id);
-      showMessage("تم تسجيل بياناتك بنجاح جزاك الله خير وجعلها الله في ميزان حسناتك");
-
-      // مسح حقول النموذج بعد الإضافة الناجحة
-      document.querySelectorAll("#register input").forEach(i => i.value = "");
-      document.getElementById("donorBlood").selectedIndex = 0;
-
-      // قد تحتاج لتحديث جدول البحث بعد الإضافة، أو جلب البيانات المحدثة
-      // searchDonors(); // يمكن استدعاء البحث لتحديث الجدول المعروض
+      await addDoc(collection(db, 'donors'), d);
+      showMessage('تم تسجيل بياناتك بنجاح');
+      document.querySelectorAll('#register input').forEach(i => i.value = '');
+      document.getElementById('donorBlood').selectedIndex = 0;
     } catch (e) {
-      console.error("Error adding document: ", e);
-      showMessage("حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.");
+      console.error(e);
+      showMessage('حدث خطأ أثناء التسجيل');
     }
   }
 
-  // دالة للبحث عن متبرع للتعديل
   async function searchDonorToEdit() {
-    const searchInput = document.getElementById("editSearchInput").value.trim();
-    if (!searchInput) {
-       showMessage("الرجاء إدخال الاسم أو رقم الهاتف للبحث.");
-       return;
-    }
-
+    const input = document.getElementById('editSearchInput').value.trim();
+    if (!input) { showMessage('الرجاء إدخال الاسم أو رقم الهاتف'); return; }
     try {
-       // جلب جميع المتبرعين (غير فعال للبيانات الكبيرة، يفضل البحث الدقيق إذا أمكن)
-       // يمكنك هنا تعديل الاستعلام للبحث عن الاسم أو الهاتف مباشرة إذا كانت البيانات غير كبيرة
-       // مثال: query(collection(db, "donors"), where("phone", "==", searchInput))
-       // لكن البحث بالاسم الكامل يتطلب فلترة محلية أو حلول بحث متقدمة
-       const donorsSnapshot = await getDocs(collection(db, "donors"));
-       const allDonors = donorsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-       // البحث محلياً عن المتبرع (حسب الاسم أو الهاتف)
-       const foundDonor = allDonors.find(d =>
-           (d.name && d.name.trim().toLowerCase() === searchInput.toLowerCase()) ||
-           (d.phone && d.phone.trim() === searchInput) // تطابق تام لرقم الهاتف
-       );
-
-       if (foundDonor) {
-         currentDonorDocId = foundDonor.id; // تخزين معرف المستند
-         document.getElementById("editingDonorId").textContent = currentDonorDocId; // عرض المعرف
-         document.getElementById("editSection").style.display = "block";
-         // تعبئة حقول التعديل ببيانات المتبرع
-         document.getElementById("editNewName").value = foundDonor.name || "";
-         document.getElementById("editPhone").value = foundDonor.phone || "";
-         document.getElementById("editCity").value = foundDonor.city || "";
-         document.getElementById("editArea").value = foundDonor.area || "";
-         document.getElementById("editLocation").value = foundDonor.location || "";
-         document.getElementById("editLastDate").value = foundDonor.lastDate || "";
-         document.getElementById("editBlood").value = foundDonor.blood || "+A"; // تعيين قيمة افتراضية إذا لم تكن موجودة
-
-       } else {
-         showMessage("المتبرع غير موجود بالاسم أو الرقم المدخل.");
-         document.getElementById("editSection").style.display = "none";
-         currentDonorDocId = null; // مسح المعرف
-         document.getElementById("editingDonorId").textContent = "";
-       }
-
-    } catch (e) {
-       console.error("Error searching donor for edit: ", e);
-       showMessage("حدث خطأ أثناء البحث عن المتبرع.");
-       document.getElementById("editSection").style.display = "none";
-       currentDonorDocId = null; // مسح المعرف
-       document.getElementById("editingDonorId").textContent = "";
-    }
+      const snap = await getDocs(collection(db, 'donors'));
+      const all = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const found = all.find(d => (d.name && d.name.toLowerCase() === input.toLowerCase()) || (d.phone === input));
+      if (found) {
+        currentDonorDocId = found.id;
+        document.getElementById('editingDonorId').textContent = found.id;
+        document.getElementById('editSection').style.display = 'block';
+        document.getElementById('editNewName').value = found.name;
+        document.getElementById('editPhone').value = found.phone;
+        document.getElementById('editCity').value = found.city;
+        document.getElementById('editArea').value = found.area;
+        document.getElementById('editLocation').value = found.location;
+        document.getElementById('editLastDate').value = found.lastDate || '';
+        document.getElementById('editBlood').value = found.blood;
+      } else {
+        showMessage('المتبرع غير موجود');
+      }
+    } catch (e) { console.error(e); showMessage('خطأ أثناء البحث'); }
   }
 
-  // دالة لحفظ التعديلات على بيانات المتبرع في Firestore
   async function saveEdit() {
-    if (!currentDonorDocId) {
-      showMessage("لم يتم تحديد متبرع للتعديل.");
-      return;
-    }
-
-    const updatedData = {
-      name: document.getElementById("editNewName").value.trim(),
-      phone: document.getElementById("editPhone").value.trim(),
-      city: document.getElementById("editCity").value.trim(),
-      area: document.getElementById("editArea").value.trim(),
-      location: document.getElementById("editLocation").value.trim(),
-      lastDate: document.getElementById("editLastDate").value || null, // استخدم null إذا كان فارغاً
-      blood: document.getElementById("editBlood").value
+    if (!currentDonorDocId) { showMessage('لم يتم تحديد متبرع للتعديل'); return; }
+    const updated = {
+      name: document.getElementById('editNewName').value.trim(),
+      phone: document.getElementById('editPhone').value.trim(),
+      city: document.getElementById('editCity').value.trim(),
+      area: document.getElementById('editArea').value.trim(),
+      location: document.getElementById('editLocation').value.trim(),
+      lastDate: document.getElementById('editLastDate').value || null,
+      blood: document.getElementById('editBlood').value
     };
-
-    // يمكنك إضافة تحقق من البيانات المحدثة هنا
-
+    // فحص التكرار باستثناء المستند الحالي
+    const nameSnap = await getDocs(query(collection(db, 'donors'), where('name', '==', updated.name)));
+    if (!nameSnap.empty && nameSnap.docs.some(doc => doc.id !== currentDonorDocId)) { showMessage('هذا الاسم مسجل لمتبرع آخر'); return; }
+    const phoneSnap = await getDocs(query(collection(db, 'donors'), where('phone', '==', updated.phone)));
+    if (!phoneSnap.empty && phoneSnap.docs.some(doc => doc.id !== currentDonorDocId)) { showMessage('رقم الهاتف مسجل لمتبرع آخر'); return; }
     try {
-      // تحديث مستند المتبرع في Firestore باستخدام المعرف المخزن
-      const donorRef = doc(db, "donors", currentDonorDocId);
-      await updateDoc(donorRef, updatedData);
-      showMessage("تم التعديل بنجاح");
-
-      // إخفاء قسم التعديل ومسح المعرف المخزن
-      document.getElementById("editSection").style.display = "none";
-      currentDonorDocId = null;
-      document.getElementById("editingDonorId").textContent = "";
-      document.getElementById("editSearchInput").value = "";
-
-      // تحديث جدول البحث إذا كان مرئياً
-      // searchDonors(); // يمكن استدعاء البحث لتحديث الجدول المعروض
-    } catch (e) {
-      console.error("Error updating document: ", e);
-      showMessage("حدث خطأ أثناء حفظ التعديل.");
-    }
+      await updateDoc(doc(db, 'donors', currentDonorDocId), updated);
+      showMessage('تم التعديل بنجاح');
+      document.getElementById('editSection').style.display = 'none'; currentDonorDocId = null;
+    } catch (e) { console.error(e); showMessage('خطأ أثناء الحفظ'); }
   }
 
-  // دالة لإلغاء التعديل
-  function cancelEdit() {
-      document.getElementById("editSection").style.display = "none";
-      currentDonorDocId = null;
-      document.getElementById("editingDonorId").textContent = "";
-      document.getElementById("editSearchInput").value = "";
-  }
+  async function deleteDonor() { if (confirm('هل أنت متأكد من الحذف؟')) { await deleteDoc(doc(db, 'donors', currentDonorDocId)); showMessage('تم الحذف'); document.getElementById('editSection').style.display='none'; currentDonorDocId=null; } }
 
+  function cancelEdit() { document.getElementById('editSection').style.display='none'; currentDonorDocId=null; }
 
-  // دالة لحذف متبرع من Firestore
-  async function deleteDonor() {
-    if (!currentDonorDocId) {
-      showMessage("لم يتم تحديد متبرع للحذف.");
-      return;
-    }
-
-    // طلب تأكيد الحذف
-    if (confirm("هل أنت متأكد من حذف هذا المتبرع بشكل نهائي؟")) {
-      try {
-        // حذف مستند المتبرع من Firestore باستخدام المعرف المخزن
-        await deleteDoc(doc(db, "donors", currentDonorDocId));
-        showMessage("تم حذف المتبرع بنجاح");
-
-        // إخفاء قسم التعديل ومسح المعرف المخزن
-        document.getElementById("editSection").style.display = "none";
-        currentDonorDocId = null;
-        document.getElementById("editingDonorId").textContent = "";
-        document.getElementById("editSearchInput").value = "";
-
-        // تحديث جدول البحث إذا كان مرئياً
-        // searchDonors(); // يمكن استدعاء البحث لتحديث الجدول المعروض
-      } catch (e) {
-        console.error("Error removing document: ", e);
-        showMessage("حدث خطأ أثناء حذف المتبرع.");
-      }
-    }
-  }
-
-  // دالة لعرض قائمة المتبرعين في جدول البحث
-  // هذه الدالة تستقبل قائمة المتبرعين المراد عرضها (بعد البحث/التصفية)
-  function renderSearchTable(donorsToRender) {
-    const tbody = document.getElementById("donorsTable");
-    tbody.innerHTML = ""; // مسح محتويات الجدول الحالية
-
-    if (!donorsToRender || donorsToRender.length === 0) {
-       tbody.innerHTML = '<tr><td colspan="8">لا يوجد متبرعون مطابقون لمعايير البحث.</td></tr>';
-       currentDisplayedDonors = []; // مسح قائمة المتبرعين المعروضة
-       return;
-    }
-
-    currentDisplayedDonors = donorsToRender; // تخزين القائمة المعروضة حالياً
-
-    donorsToRender.forEach(d => {
-	// بعد عرض الجدول
-    document.getElementById("donorCount").textContent = `عدد المتبرعين: ${donorsToRender.length}`;
-
-      // تأكد من أن كل متبرع لديه 'id'
-      if (!d.id) {
-         console.warn("Skipping donor with no ID:", d);
-         return;
-      }
-      // إنشاء صف الجدول ديناميكياً
+  function renderSearchTable(donors) {
+    const tbody = document.getElementById('donorsTable'); tbody.innerHTML = '';
+    if (!donors.length) { tbody.innerHTML = '<tr><td colspan="8">لا يوجد متبرعون</td></tr>'; document.getElementById('donorCount').textContent = 'عدد المتبرعين: 0'; currentDisplayedDonors=[]; return; }
+    currentDisplayedDonors = donors; document.getElementById('donorCount').textContent = `عدد المتبرعين: ${donors.length}`;
+    donors.forEach(d => {
       const row = tbody.insertRow();
-
       row.innerHTML = `
-        <td data-label="الاسم">${d.name || ""}</td>
+        <td data-label="الاسم">${d.name}</td>
         <td data-label="الهاتف">
-  <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-    <a href="tel:${d.phone}" style="color: white; background-color: #b30000; padding: 5px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: bold; font-size: 12px; white-space: nowrap;">
-      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" fill="white" viewBox="0 0 24 24">
-        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21 11.72 11.72 0 003.69.6 1 1 0 011 1v3.18a1 1 0 01-1 1A17.93 17.93 0 013 5a1 1 0 011-1h3.18a1 1 0 011 1 11.72 11.72 0 00.6 3.69 1 1 0 01-.21 1.11l-2.2 2.2z"/>
-      </svg>
-      اضغط للإتصال
-    </a>
-    <span style="color: #b30000; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.phone || ""}</span>
-  </div>
-</td>
-        <td data-label="الفصيلة">${d.blood || ""}</td>
-        <td data-label="المحافظة">${d.city || ""}</td>
-        <td data-label="المديرية">${d.area || ""}</td>
-        <td data-label="السكن">${d.location || ""}</td>
-        <td data-label="آخر تبرع">${d.lastDate || "—"}</td>
-        <td data-label="تعديل تاريخ التبرع">
-          <button data-donor-id="${d.id}" class="btn-update-date">تحديث</button>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <a href="tel:${d.phone}" style="color:white;background-color:#b30000;padding:5px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:bold;font-size:12px;white-space:nowrap;">
+              <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" fill="white" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21 11.72 11.72 0 003.69.6 1 1 0 011 1v3.18a1 1 0 01-1 1A17.93 17.93 0 013 5a1 1 0 011-1h3.18a1 1 0 011 1 11.72 11.72 0 00.6 3.69 1 1 0 01-.21 1.11l-2.2 2.2z"/></svg>
+              اضغط للإتصال
+            </a>
+            <span style="color:#b30000;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.phone}</span>
+          </div>
         </td>
+        <td data-label="الفصيلة">${d.blood}</td>
+        <td data-label="المحافظة">${d.city}</td>
+        <td data-label="المديرية">${d.area}</td>
+        <td data-label="السكن">${d.location}</td>
+        <td data-label="آخر تبرع">${d.lastDate||'—'}</td>
+        <td data-label="تعديل تاريخ التبرع"><button data-donor-id="${d.id}" class="btn-update-date">تحديث</button></td>
       `;
-      // تمت إزالة onclick هنا
     });
-
-    // بعد إضافة الصفوف، قم بربط مستمعي الأحداث بأزرار تحديث التاريخ
-    document.querySelectorAll(".btn-update-date").forEach(button => {
-        button.addEventListener('click', function() {
-            const donorId = this.getAttribute('data-donor-id');
-            enableEditDate(donorId);
-        });
-    });
+    document.querySelectorAll('.btn-update-date').forEach(btn => btn.addEventListener('click', () => enableEditDate(btn.getAttribute('data-donor-id'))));
   }
 
-
-  // دالة البحث الرئيسية
   async function searchDonors() {
-    const bloodFilter = document.getElementById("searchBlood").value;
-    const textQuery = document.getElementById("searchQuery").value.trim().toLowerCase();
-
-    let donorsCollectionRef = collection(db, "donors");
-    let q = query(donorsCollectionRef); // يبدأ باستعلام يجلب الكل افتراضياً
-
-    // تطبيق فلتر فصيلة الدم إذا تم اختياره
-    if (bloodFilter !== "") {
-      q = query(donorsCollectionRef, where("blood", "==", bloodFilter));
-      // ملاحظة: لا يمكنك إضافة فلتر نصي مباشر على حقول متعددة مثل الاسم والمحافظة هنا
-      // ستحتاج لفلترة النتائج محلياً بناءً على النص
-    }
-    // إذا لم يتم اختيار فصيلة، سنقوم بجلب الجميع وتصفيته محلياً إذا كانت البيانات ليست كبيرة جداً
-
-    try {
-      const querySnapshot = await getDocs(q);
-      let fetchedDonors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-      // تطبيق الفلتر النصي محلياً (بعد جلب البيانات من Firestore)
-      // هذا غير فعال للبيانات الكبيرة، لكنه يحافظ على منطق البحث الحالي
-      if (textQuery) {
-        fetchedDonors = fetchedDonors.filter(d =>
-          (d.name && d.name.toLowerCase().includes(textQuery)) ||
-          (d.phone && d.phone.includes(textQuery)) ||
-          (d.city && d.city.toLowerCase().includes(textQuery)) ||
-          (d.area && d.area.toLowerCase().includes(textQuery)) ||
-          (d.location && d.location.toLowerCase().includes(textQuery))
-        );
-      }
-
-      // عرض النتائج المفلترة في الجدول
-      renderSearchTable(fetchedDonors);
-
-    } catch (e) {
-      console.error("Error searching donors: ", e);
-      showMessage("حدث خطأ أثناء البحث عن المتبرعين.");
-      renderSearchTable([]); // عرض جدول فارغ أو رسالة خطأ
-    }
+    const blood = document.getElementById('searchBlood').value;
+    const text = document.getElementById('searchQuery').value.trim().toLowerCase();
+    let q = collection(db, 'donors');
+    if (blood) q = query(q, where('blood','==',blood));
+    const snap = await getDocs(q);
+    let donors = snap.docs.map(d => ({ id:d.id,...d.data() }));
+    if (text) donors = donors.filter(d => 
+      (d.name&&d.name.toLowerCase().includes(text))||
+      (d.phone&&d.phone.includes(text))||
+      (d.city&&d.city.toLowerCase().includes(text))||
+      (d.area&&d.area.toLowerCase().includes(text))||
+      (d.location&&d.location.toLowerCase().includes(text))
+    );
+    renderSearchTable(donors);
   }
 
-  // دالة لتمكين نافذة تحديث تاريخ التبرع
-  // تستقبل معرف المستند (ID) للمتبرع المراد تحديثه
-  function enableEditDate(donorId) {
-    currentDonorDocId = donorId; // تخزين معرف المستند
-    document.getElementById("updateDatePopup").classList.add("active");
-    document.getElementById("newDonationDate").value = ""; // مسح حقل التاريخ
-  }
+  function enableEditDate(id) { currentDonorDocId = id; document.getElementById('updateDatePopup').classList.add('active'); document.getElementById('newDonationDate').value = ''; }
 
-  // دالة لحفظ تاريخ التبرع المحدث في Firestore
   async function saveDonationDate() {
-    if (!currentDonorDocId) {
-      showMessage("حدث خطأ: لم يتم تحديد المتبرع لتحديث تاريخ التبرع.");
-      return;
-    }
+    const newDate = document.getElementById('newDonationDate').value;
+    if (!newDate) { alert('يرجى إدخال تاريخ'); return; }
+    try { await updateDoc(doc(db,'donors',currentDonorDocId),{ lastDate:newDate }); showMessage('تم تحديث تاريخ التبرع'); closeUpdateDatePopup(); searchDonors(); currentDonorDocId=null; }
+    catch(e){ console.error(e); showMessage('خطأ أثناء التحديث'); }
+  }
+  function closeUpdateDatePopup() { document.getElementById('updateDatePopup').classList.remove('active'); currentDonorDocId=null; }
 
-    const newDate = document.getElementById("newDonationDate").value;
-    if (newDate.trim() === "") {
-      alert("يرجى إدخال تاريخ التبرع");
-      return;
-    }
-
-    try {
-      // تحديث حقل lastDate في مستند المتبرع المحدد
-      const donorRef = doc(db, "donors", currentDonorDocId);
-      await updateDoc(donorRef, { lastDate: newDate });
-
-      showMessage("تم تحديث تاريخ تبرعك بنجاح");
-      closeUpdateDatePopup(); // إغلاق النافذة المنبثقة
-
-      // تحديث جدول البحث لعرض التاريخ الجديد
-      searchDonors(); // أفضل طريقة هي إعادة جلب البيانات وعرضها
-
-      currentDonorDocId = null; // مسح المعرف المخزن
-    } catch (e) {
-      console.error("Error updating donation date: ", e);
-      showMessage("حدث خطأ أثناء تحديث تاريخ التبرع.");
-    }
+  // تصدير PDF
+  function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const docPDF = new jsPDF();
+    const columns = ["الاسم","الهاتف","الفصيلة","المحافظة","المديرية","السكن","آخر تبرع"];
+    const rows = currentDisplayedDonors.map(d => [d.name, d.phone, d.blood, d.city, d.area, d.location, d.lastDate||'']);
+    docPDF.autoTable({ head:[columns], body:rows });
+    docPDF.save('donors.pdf');
   }
 
-  // دالة لإغلاق نافذة تحديث تاريخ التبرع
-  function closeUpdateDatePopup() {
-    document.getElementById("updateDatePopup").classList.remove("active");
-    currentDonorDocId = null; // مسح المعرف المخزن عند الإغلاق
-  }
-
-  // دالة لعرض الرسائل المنبثقة
-  function showMessage(msg) {
-    const popup = document.getElementById("successPopup");
-    popup.innerHTML = msg;
-    popup.classList.add("active");
-    setTimeout(() => popup.classList.remove("active"), 3000);
-  }
-
-  // --- ربط مستمعي الأحداث بعد تحميل DOM بالكامل ---
   document.addEventListener('DOMContentLoaded', () => {
-      // ربط أزرار التنقل الرئيسية
-      document.getElementById('btn-show-register').addEventListener('click', () => showSection('register'));
-      document.getElementById('btn-show-password-popup').addEventListener('click', showPasswordPopup);
-      document.getElementById('btn-show-search').addEventListener('click', () => showSection('search'));
-
-      // ربط زر تسجيل متبرع جديد
-      document.getElementById('btn-add-donor').addEventListener('click', addDonor);
-
-      // ربط أزرار ووحدات إدخال في قسم التعديل
-      document.getElementById('btn-search-donor-edit').addEventListener('click', searchDonorToEdit);
-      document.getElementById('btn-save-edit').addEventListener('click', saveEdit);
-      document.getElementById('btn-delete-donor').addEventListener('click', deleteDonor);
-      document.getElementById('btn-cancel-edit').addEventListener('click', cancelEdit);
-
-
-      // ربط زر الدخول في نافذة كلمة المرور المنبثقة
-      document.getElementById('btn-check-password').addEventListener('click', checkPassword);
-      // ربط زر الإغلاق في نافذة كلمة المرور المنبثقة
-      document.getElementById('btn-close-password-popup').addEventListener('click', closePasswordPopup);
-
-      // ربط وحدة إدخال وفلتر البحث ببدء البحث عند التغيير أو الإدخال
-      document.getElementById('searchBlood').addEventListener('change', searchDonors);
-      document.getElementById('searchQuery').addEventListener('input', searchDonors);
-
-      // ربط زر حفظ التحديث في نافذة تحديث التاريخ المنبثقة
-      document.getElementById('btn-save-donation-date').addEventListener('click', saveDonationDate);
-      // ربط زر الإغلاق في نافذة تحديث التاريخ المنبثقة
-      document.getElementById('btn-close-update-date-popup').addEventListener('click', closeUpdateDatePopup);
-
-
-      // عند تحميل الصفحة لأول مرة، اعرض قسم التسجيل
-      showSection('register');
-      // يمكنك أيضاً استدعاء searchDonors() هنا إذا أردت عرض كل المتبرعين
-      // عند فتح قسم البحث لأول مرة تلقائياً
+    document.getElementById('btn-show-register').addEventListener('click', () => showSection('register'));
+    document.getElementById('btn-show-password-popup').addEventListener('click', showPasswordPopup);
+    document.getElementById('btn-show-search').addEventListener('click', () => showSection('search'));
+    document.getElementById('btn-add-donor').addEventListener('click', addDonor);
+    document.getElementById('btn-search-donor-edit').addEventListener('click', searchDonorToEdit);
+    document.getElementById('btn-save-edit').addEventListener('click', saveEdit);
+    document.getElementById('btn-delete-donor').addEventListener('click', deleteDonor);
+    document.getElementById('btn-cancel-edit').addEventListener('click', cancelEdit);
+    document.getElementById('btn-check-password').addEventListener('click', checkPassword);
+    document.getElementById('btn-close-password-popup').addEventListener('click', closePasswordPopup);
+    document.getElementById('searchBlood').addEventListener('change', searchDonors);
+    document.getElementById('searchQuery').addEventListener('input', searchDonors);
+    document.getElementById('btn-save-donation-date').addEventListener('click', saveDonationDate);
+    document.getElementById('btn-close-update-date-popup').addEventListener('click', closeUpdateDatePopup);
+    document.getElementById('btn-export-pdf').addEventListener('click', exportPDF);
+    showSection('register');
   });
-
-
 </script>
 
 </body>
