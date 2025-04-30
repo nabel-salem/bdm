@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>تطبيق قطرة أمل</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; }
     body { font-family: 'Arial', sans-serif; background: #f0f0f0; margin: 0; padding: 0; }
@@ -36,8 +37,11 @@
 <body>
 
 <header>تطبيق قطرة أمل ... قطرة أمل تنقذ حياة</header>
-<header>تم تصميم هذا الموقع لتسهيل عملية البحث عن المتبرعين بالدم، وتوفير فصائل الدم المختلفة بسرعة وسهولة لكل من يحتاج إليها</header>
-<header>الرجاء من المتبرعين تعبئة بياناتهم الصحيحة وكاملة حتى يتسهل على الباحثين عن الدم ايجاده</header>
+<div style="background-color: #f0f8ff; border: 1px solid #90caf9; border-radius: 10px; padding: 15px; margin: 20px auto; max-width: 700px; text-align: center; font-size: 0.90em; color: #333; line-height: 1.6;">
+  <p>🩸 تم تصميم هذا الموقع لتسهيل عملية البحث عن المتبرعين بالدم، وتوفير فصائل الدم المختلفة بسرعة وسهولة لكل من يحتاج إليها.</p>
+  <p>🔴 الرجاء من المتبرعين تعبئة بياناتهم الصحيحة وكتابة الاسم الرباعي فقط لكي يظهر الاسم كامل في الجدول.</p>
+  <p>🔴 وللباحثين عن متبرع اضغط على البحث عن متبرع وستجد كل شيء في هذه النافذة.</p>
+</div>
 
 <nav>
   <button id="btn-show-register">تسجيل متبرع جديد</button>
@@ -47,8 +51,9 @@
 
 <div id="register" class="section active">
   <h3>تسجيل متبرع جديد</h3>
-  <input type="text" id="donorName" placeholder="الاسم الكامل">
+  <input type="text" id="donorName" placeholder="الاسم الرباعي">
   <input type="text" id="donorPhone" placeholder="رقم الهاتف">
+  <input type="text" id="donorWhatsapp" placeholder="رقم الواتساب يكون صيغة الرقم (*********967)">
   <input type="text" id="donorCity" placeholder="المحافظة">
   <input type="text" id="donorArea" placeholder="المديرية">
   <input type="text" id="donorLocation" placeholder="مكان السكن">
@@ -72,6 +77,7 @@
     <p>جاري تعديل بيانات المتبرع صاحب المعرف: <span id="editingDonorId"></span></p>
     <input type="text" id="editNewName" placeholder="الاسم الكامل">
     <input type="text" id="editPhone" placeholder="رقم الهاتف">
+    <input type="text" id="editWhatsapp" placeholder="رقم الواتساب">
     <input type="text" id="editCity" placeholder="المحافظة">
     <input type="text" id="editArea" placeholder="المديرية">
     <input type="text" id="editLocation" placeholder="مكان السكن">
@@ -103,7 +109,7 @@
   <table>
     <thead>
       <tr>
-        <th>الاسم</th><th>الهاتف</th><th>الفصيلة</th><th>المحافظة</th><th>المديرية</th><th>السكن</th><th>آخر تبرع</th><th>تعديل تاريخ التبرع</th>
+        <th>الاسم</th><th>الهاتف</th><th>الفصيلة</th><th>المحافظة</th><th>المديرية</th><th>السكن</th><th>الواتساب</th><th>آخر تبرع</th><th>تعديل تاريخ التبرع</th>
       </tr>
     </thead>
     <tbody id="donorsTable"></tbody>
@@ -143,6 +149,17 @@
   let currentDonorDocId = null;
   let currentDisplayedDonors = [];
 
+function normalizeArabic(text) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[\u064B-\u065F]/g, '') // حذف التشكيل
+      .replace(/[\u0622\u0623\u0625]/g, 'ا') // الهمزات إلى ألف
+      .replace(/ة/g, 'ه') // تاء مربوطة إلى هاء
+      .replace(/ى/g, 'ي') // ألف مقصورة إلى ياء
+      .replace(/\s+/g, ' '); // إزالة الفراغات الزائدة
+  }
+
   function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -174,6 +191,7 @@
       area: document.getElementById('donorArea').value.trim(),
       location: document.getElementById('donorLocation').value.trim(),
       lastDate: document.getElementById('donorLastDate').value || null,
+      whatsapp: document.getElementById('donorWhatsapp').value.trim(),
       blood: document.getElementById('donorBlood').value
     };
     if (!d.name || !d.phone || !d.city || !d.area || !d.location || !d.blood) { showMessage('يرجى تعبئة جميع الحقول الأساسية'); return; }
@@ -184,7 +202,7 @@
 
     try {
       await addDoc(collection(db, 'donors'), d);
-      showMessage('تم تسجيل بياناتك بنجاح');
+      showMessage('تم تسجيل بياناتك بنجاح جزاك الله خير');
       document.querySelectorAll('#register input').forEach(i => i.value = '');
       document.getElementById('donorBlood').selectedIndex = 0;
     } catch (e) {
@@ -199,7 +217,12 @@
     try {
       const snap = await getDocs(collection(db, 'donors'));
       const all = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const found = all.find(d => (d.name && d.name.toLowerCase() === input.toLowerCase()) || (d.phone === input));
+      const normInput = normalizeArabic(input);
+      const found = all.find(d => {
+        const normName = normalizeArabic(d.name || '');
+        const normPhone = normalizeArabic(d.phone || '');
+        return normName === normInput || normPhone === normInput;
+      });
       if (found) {
         currentDonorDocId = found.id;
         document.getElementById('editingDonorId').textContent = found.id;
@@ -211,6 +234,7 @@
         document.getElementById('editLocation').value = found.location;
         document.getElementById('editLastDate').value = found.lastDate || '';
         document.getElementById('editBlood').value = found.blood;
+        document.getElementById('editWhatsapp').value = found.whatsapp || '';
       } else {
         showMessage('المتبرع غير موجود');
       }
@@ -226,6 +250,7 @@
       area: document.getElementById('editArea').value.trim(),
       location: document.getElementById('editLocation').value.trim(),
       lastDate: document.getElementById('editLastDate').value || null,
+      whatsapp: document.getElementById('editWhatsapp').value.trim(),
       blood: document.getElementById('editBlood').value
     };
     // فحص التكرار باستثناء المستند الحالي
@@ -265,6 +290,25 @@
         <td data-label="المحافظة">${d.city}</td>
         <td data-label="المديرية">${d.area}</td>
         <td data-label="السكن">${d.location}</td>
+        <td data-label="الواتساب" style="text-align: center;">
+  ${
+    d.whatsapp
+      ? `<a href="https://wa.me/${d.whatsapp}" target="_blank"
+            style="color:green; text-decoration:none; font-weight:bold;
+                   display:flex; flex-direction:column; align-items:center;
+                   font-size: 0.95em;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <i class="fab fa-whatsapp" style="font-size:1.2em;"></i>
+              <span>${d.whatsapp}</span>
+            </div>
+            <small style="color:#444; font-weight:normal; margin-top:3px;">
+              اضغط للتواصل واتساب مباشرة
+            </small>
+         </a>`
+      : "—"
+  }
+</td>
+
         <td data-label="آخر تبرع">${d.lastDate||'—'}</td>
         <td data-label="تعديل تاريخ التبرع"><button data-donor-id="${d.id}" class="btn-update-date">تحديث</button></td>
       `;
@@ -274,18 +318,15 @@
 
   async function searchDonors() {
     const blood = document.getElementById('searchBlood').value;
-    const text = document.getElementById('searchQuery').value.trim().toLowerCase();
+    const text = normalizeArabic(document.getElementById('searchQuery').value);
     let q = collection(db, 'donors');
     if (blood) q = query(q, where('blood','==',blood));
     const snap = await getDocs(q);
     let donors = snap.docs.map(d => ({ id:d.id,...d.data() }));
-    if (text) donors = donors.filter(d => 
-      (d.name&&d.name.toLowerCase().includes(text))||
-      (d.phone&&d.phone.includes(text))||
-      (d.city&&d.city.toLowerCase().includes(text))||
-      (d.area&&d.area.toLowerCase().includes(text))||
-      (d.location&&d.location.toLowerCase().includes(text))
-    );
+    if (text) donors = donors.filter(d => {
+      const fields = [d.name, d.phone, d.city, d.area, d.location].map(f => normalizeArabic(f || ''));
+      return fields.some(f => f.includes(text));
+    });
     renderSearchTable(donors);
   }
 
