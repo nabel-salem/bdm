@@ -188,6 +188,15 @@ function normalizeArabic(text) {
   }
 
   async function addDonor() {
+   // الحصول على الاسم المدخل والتحقق من عدد الأسماء
+  const donorName = document.getElementById('donorName').value.trim();
+  const nameParts = donorName.split(/\s+/); // تقسيم الاسم بناءً على المسافات بين الكلمات
+
+  // التحقق من أن الاسم يحتوي على اسمين إلى أربعة فقط
+  if (nameParts.length < 2 || nameParts.length > 4) {
+    showMessage("الاسم يجب أن يتكون من اسمين أو أربعة أسماء فقط.");
+    return; // عدم متابعة الإجراء إذا كان الاسم غير صحيح
+  }
     const d = {
       name: document.getElementById('donorName').value.trim(),
       phone: document.getElementById('donorPhone').value.trim(),
