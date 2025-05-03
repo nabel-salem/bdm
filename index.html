@@ -208,7 +208,7 @@ function normalizeArabic(text) {
     return; // عدم متابعة الإجراء إذا كان الاسم غير صحيح
   }
     const donorPhone = document.getElementById('donorPhone').value.trim();
-  
+
   // التحقق من أن رقم الهاتف يتكون من 9 أرقام فقط
   const phoneRegex = /^[0-9]{9}$/;
   if (!phoneRegex.test(donorPhone)) {
@@ -262,7 +262,7 @@ function normalizeArabic(text) {
         document.getElementById('editPhone').value = found.phone;
         document.getElementById('editCity').value = found.city;
         document.getElementById('editArea').value = found.area;
-        document.getElementById('editLocation').value = found.location;
+        document.getElementById('editLocation').value = found.location || '';
         document.getElementById('editLastDate').value = found.lastDate || '';
         document.getElementById('editBlood').value = found.blood;
         document.getElementById('editWhatsapp').value = found.whatsapp || '';
@@ -320,7 +320,7 @@ function normalizeArabic(text) {
         <td data-label="الفصيلة">${d.blood}</td>
         <td data-label="المحافظة">${d.city}</td>
         <td data-label="المديرية">${d.area}</td>
-        <td data-label="السكن">${d.location}</td>
+        <td data-label="السكن">${d.location && d.location.trim() ? d.location : '—'}</td>
         <td data-label="الواتساب" style="text-align: center;">
   ${
     d.whatsapp
