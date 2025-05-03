@@ -69,7 +69,7 @@
   <input type="tel" id="donorWhatsapp" placeholder="رقم الواتساب (اكتب الرقم بهذه الصيغة: 967xxxxxxxx" inputmode="numeric" style="text-align: right;" dir="rtl">
   <input type="text" id="donorCity" placeholder="المحافظة">
   <input type="text" id="donorArea" placeholder="المديرية">
-  <input type="text" id="donorLocation" placeholder="مكان السكن">
+  <input type="text" id="donorLocation" placeholder="مكان السكن (ليس اجباري عليك كتابة السكن إذا لم ترغب بتعبئتة اتركة فارغاً">
   <label class="field-label">تحديد تاريخ آخر تبرع لك (وإذا لم تتبرع بعد فاتركه فارغاً) ويمكنك تعديله من جدول البيانات في حال قمت بالتبرع.</label>
   <input type="date" id="donorLastDate">
   <select id="donorBlood">
@@ -93,7 +93,7 @@
     <input type="text" id="editWhatsapp" placeholder="رقم الواتساب">
     <input type="text" id="editCity" placeholder="المحافظة">
     <input type="text" id="editArea" placeholder="المديرية">
-    <input type="text" id="editLocation" placeholder="مكان السكن">
+    <input type="text" id="editLocation" placeholder="مكان السكن(ليس اجباري عليك كتابة السكن إذا لم ترغب بتعبئتة اتركة فارغاً)">
     <input type="date" id="editLastDate">
     <select id="editBlood">
       <option>+A</option><option>-A</option>
@@ -202,10 +202,18 @@ function normalizeArabic(text) {
   const donorName = document.getElementById('donorName').value.trim();
   const nameParts = donorName.split(/\s+/); // تقسيم الاسم بناءً على المسافات بين الكلمات
 
-  // التحقق من أن الاسم يحتوي على ثلاثة إلى أربعة فقط
-  if (nameParts.length < 3 || nameParts.length > 4) {
-    showMessage("الاسم يجب أن يتكون من ثلاثة أسماء أو أربعة أسماء فقط.");
+  // التحقق من أن الاسم يحتوي على أسمين إلى أربعة فقط
+  if (nameParts.length < 2 || nameParts.length > 4) {
+    showMessage("الاسم يجب أن يتكون من أسمين إلى أربعة أسماء فقط.");
     return; // عدم متابعة الإجراء إذا كان الاسم غير صحيح
+  }
+    const donorPhone = document.getElementById('donorPhone').value.trim();
+  
+  // التحقق من أن رقم الهاتف يتكون من 9 أرقام فقط
+  const phoneRegex = /^[0-9]{9}$/;
+  if (!phoneRegex.test(donorPhone)) {
+    showMessage('رقم الهاتف يجب أن يتكون من 9 أرقام فقط');
+    return;
   }
     const d = {
       name: document.getElementById('donorName').value.trim(),
@@ -217,7 +225,7 @@ function normalizeArabic(text) {
       whatsapp: document.getElementById('donorWhatsapp').value.trim(),
       blood: document.getElementById('donorBlood').value
     };
-    if (!d.name || !d.phone || !d.city || !d.area || !d.location || !d.blood) { showMessage('يرجى تعبئة جميع الحقول الأساسية'); return; }
+    if (!d.name || !d.phone || !d.city || !d.area ||  !d.blood) { showMessage('يرجى تعبئة جميع الحقول الأساسية'); return; }
 
     // فحص التكرار في Firestore
       const phoneSnap = await getDocs(query(collection(db, 'donors'), where('phone', '==', d.phone)));
